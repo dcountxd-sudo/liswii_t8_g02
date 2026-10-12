@@ -60,7 +60,6 @@ src/main/java/co/unicauca/taller08/
 Las preguntas solo se pueden evaluar cuando están publicadas. Las respuestas abiertas requieren una respuesta esperada no vacía.
 
 ## Codigo del uml en plant uml
-CODIGO EN PLANT UML:
 @startuml
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
@@ -189,9 +188,3 @@ QuestionBankFacade ..> QuestionEvaluator
 QuestionBankFacade ..> QuestionComponent
 QuestionRepository o--> Question
 @enduml
-
-
-
-
-
-
