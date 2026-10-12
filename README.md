@@ -58,3 +58,140 @@ src/main/java/co/unicauca/taller08/
 ## Nota de evaluación
 
 Las preguntas solo se pueden evaluar cuando están publicadas. Las respuestas abiertas requieren una respuesta esperada no vacía.
+
+## Codigo del uml en plant uml
+CODIGO EN PLANT UML:
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+title Banco de Preguntas - Taller 8
+
+package state {
+  interface QuestionState
+  abstract class AbstractQuestionState
+  class DraftState
+  class PendingReviewState
+  class ReviewState
+  class ApprovedState
+  class PublishedState
+  class ArchivedState
+}
+QuestionState <|.. AbstractQuestionState
+AbstractQuestionState <|-- DraftState
+AbstractQuestionState <|-- PendingReviewState
+AbstractQuestionState <|-- ReviewState
+AbstractQuestionState <|-- ApprovedState
+AbstractQuestionState <|-- PublishedState
+AbstractQuestionState <|-- ArchivedState
+
+package domain {
+  class Question {
+    -statement: String
+    -type: QuestionType
+    -difficultyLevel: Difficultylevel
+    -correctAnswer: String
+    -explanation: String
+    +submitForReview()
+    +assignReviewer()
+    +approve()
+    +reject()
+    +publish()
+    +archive()
+    +validate()
+  }
+  class Option
+  enum QuestionType
+  enum Difficultylevel
+}
+Question o--> QuestionState : state
+Question *-- "0..*" Option
+Question --> QuestionType
+Question --> Difficultylevel
+
+package templatemethod {
+  abstract class QuestionEvaluator {
+    +evaluate(): boolean
+    +evaluateWithFeedback(): EvaluationResult
+    #validateQuestion()
+    #obtainAnswers()
+    #{abstract} validateQuestionType()
+    #{abstract} compareAnswers()
+    #determineResult()
+    #generateFeedback()
+  }
+  class SingleChoiceEvaluator
+  class MultipleAnswerEvaluator
+  class TrueFalseEvaluator
+  class OpenQuestionEvaluator
+  class EvaluationResult <<record>>
+}
+QuestionEvaluator <|-- SingleChoiceEvaluator
+QuestionEvaluator <|-- MultipleAnswerEvaluator
+QuestionEvaluator <|-- TrueFalseEvaluator
+QuestionEvaluator <|-- OpenQuestionEvaluator
+QuestionEvaluator ..> EvaluationResult
+QuestionEvaluator ..> Question
+
+package decorator {
+  interface QuestionComponent {
+    +getDescription()
+    +getScore()
+  }
+  class BasicQuestion
+  abstract class QuestionDecorator
+  class HighDifficultyQuestion
+  class ContextualizedQuestion
+  class FeedbackQuestion
+  class CompetencyQuestion
+  class MarkedForReviewQuestion
+}
+QuestionComponent <|.. BasicQuestion
+QuestionComponent <|.. QuestionDecorator
+QuestionDecorator o--> QuestionComponent
+QuestionDecorator <|-- HighDifficultyQuestion
+QuestionDecorator <|-- ContextualizedQuestion
+QuestionDecorator <|-- FeedbackQuestion
+QuestionDecorator <|-- CompetencyQuestion
+QuestionDecorator <|-- MarkedForReviewQuestion
+BasicQuestion --> Question
+
+package adapter {
+  interface QuestionProvider
+  interface ExternalQuestionService {
+    +getQuestionJson(): String
+  }
+  class ExternalQuestionAdapter
+  class SampleExternalQuestionService
+}
+QuestionProvider <|.. ExternalQuestionAdapter
+ExternalQuestionAdapter --> ExternalQuestionService
+ExternalQuestionService <|.. SampleExternalQuestionService
+ExternalQuestionAdapter ..> Question : crea
+
+package facade {
+  class QuestionBankFacade
+  class QuestionService
+  class QuestionRepository
+  class QuestionValidator
+  class QuestionPublisher
+  class QuestionImporter
+}
+QuestionBankFacade --> QuestionService
+QuestionBankFacade --> QuestionRepository
+QuestionBankFacade --> QuestionValidator
+QuestionBankFacade --> QuestionPublisher
+QuestionBankFacade --> QuestionImporter
+QuestionService --> QuestionRepository
+QuestionService --> QuestionValidator
+QuestionPublisher --> QuestionValidator
+QuestionImporter ..> QuestionProvider
+QuestionBankFacade ..> QuestionEvaluator
+QuestionBankFacade ..> QuestionComponent
+QuestionRepository o--> Question
+@enduml
+
+
+
+
+
+
